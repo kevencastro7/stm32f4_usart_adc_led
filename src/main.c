@@ -14,32 +14,46 @@
 #include "port.h"
 #include "led.h"
 #include "adc.h"
-#include <stdio.h>
+#include "delay.h"
 
-int main ( void )
+int main ( void )													//------------------COMENTÁRIOS-------------------//
 {
-		port_init();
-		debug_init();
-		led_init();
-		adc_init();
-        uint16_t data;
-        uint16_t adc ;
-		debug_write("Iniciando Programa");
+//-------------------------------SETUP------------------------------//
+
+		port_init();												// Temporizador
+		debug_init();												// Comunicação Serial
+		led_init();													// LEDs
+		adc_init();													// Conversor analógico-digital
+        uint16_t adc ;												// Variável a receber o valor do adc
+        uint32_t count = 0;											// Contador
+    	int fs = 120;												// Frequência de amostragem
+    	int adc_burst[120];											// Valores guardados em 1 segundo
+    	uint32_t start,sample;										// Valores de tempo
+    	port_sleep_ms(100);											// Delay de inicialização
+    	led_write(LED4_PIN,1);
+
+//------------------------------------------------------------------//
+
+//-------------------------------LOOP-------------------------------//
 	    while (1)
 	    {
-	    	data = debug_read();
-	    	adc = adc_read_samples(100);
-	        led_write(LED5_PIN,1);
-	        if (data == '1')
-	        {
-	    		debug_write_int(adc);
-	    		led_write(LED3_PIN,1);
-	        }
-	        else if (data == '0')
-	        {
-	    		debug_write("");
-	    		led_write(LED3_PIN,0);
-	        }
+	    	start = port_micros();									// Início da amostragem
+	    	while((port_micros() - start) <= 1000000)				// 1 segundo de amostragem
+			{
+	    		sample = port_micros();								// Início da amostra
+				adc = adc_read();									// Leitura do adc
+				if (count < fs) adc_burst[count] = adc;				// Segurança do adc_burst
+				count++;											// Incremento do contador
+				while((port_micros() - sample) <= 1000000/fs-1);	// Tempo de uma amostra
+			}
+
+	    	for (int i = 0;i<fs;i++)								// Percorrer o adc_burst
+	    	{
+				debug_write_msg_string(1,adc_burst[i]);				// Enviar os valores via serial
+	    	}
+			count = 0;												// Zerar o contador para uma nova amostragem
+	    	port_sleep_ms(2000);									// Delay pois o python ainda não está pronto.
 	    }
+//-----------------------------------------------------------------//
 		return 0;
 }
