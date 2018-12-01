@@ -26,8 +26,8 @@ int main ( void )													//------------------COMENTÁRIOS------------------
 		adc_init();													// Conversor analógico-digital
         uint16_t adc ;												// Variável a receber o valor do adc
         uint32_t count = 0;											// Contador
-    	int fs = 120;												// Frequência de amostragem
-    	int adc_burst[120];											// Valores guardados em 1 segundo
+    	int fs = 1000;												// Frequência de amostragem
+    	int adc_burst[4];											// Valores guardados em 1 segundo
     	uint32_t start,sample;										// Valores de tempo
     	port_sleep_ms(100);											// Delay de inicialização
     	led_write(LED4_PIN,1);
@@ -37,23 +37,17 @@ int main ( void )													//------------------COMENTÁRIOS------------------
 //-------------------------------LOOP-------------------------------//
 	    while (1)
 	    {
-	    	start = port_micros();									// Início da amostragem
-	    	while((port_micros() - start) <= 1000000)				// 1 segundo de amostragem
-			{
-	    		sample = port_micros();								// Início da amostra
-				adc = adc_read();									// Leitura do adc
-				if (count < fs) adc_burst[count] = adc;				// Segurança do adc_burst
-				count++;											// Incremento do contador
-				while((port_micros() - sample) <= 1000000/fs-1);	// Tempo de uma amostra
-			}
 
-	    	for (int i = 0;i<fs;i++)								// Percorrer o adc_burst
+	    	sample = port_micros();									// Início da amostra
+			adc_burst[count] = adc_read();							// Salva amostra
+			count++;												// Incremento do contador
+	    	if (count == 4)											// Quando salva 4 amostras
 	    	{
-				debug_write_msg_string(1,adc_burst[i]);				// Enviar os valores via serial
+				debug_write_msg_string("|",&adc_burst[0]);			// Enviar os valores via serial
+				count = 0;											// Zerar o contador
 	    	}
-			count = 0;												// Zerar o contador para uma nova amostragem
-	    	port_sleep_ms(2000);									// Delay pois o python ainda não está pronto.
+			while((port_micros() - sample) <= 1000000/fs-1);		// Tempo de uma amostra
 	    }
-//-----------------------------------------------------------------//
+//------------------------------------------------------------------//
 		return 0;
 }
