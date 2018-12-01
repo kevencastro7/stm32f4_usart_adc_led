@@ -7,26 +7,33 @@
 
 #include <port.h>
 
-void port_init(void)
+																	//------------------COMENTÁRIOS-------------------//
+
+void port_init(void)												// Inicialização
 {
-	RCC_ClocksTypeDef RCC_Clocks;
-	RCC_GetClocksFreq (&RCC_Clocks);
-	(void) SysTick_Config (RCC_Clocks.HCLK_Frequency / (3132));
+	RCC_ClocksTypeDef RCC_Clocks;									// Ativar o clock
+	RCC_GetClocksFreq (&RCC_Clocks);								// Receber o valor do clock
+	(void) SysTick_Config (RCC_Clocks.HCLK_Frequency / (1000000));	// Um tick a cada 1 micro segundo
 }
 
-void SysTick_Handler (void)
+void SysTick_Handler (void)											// Handler do Systick
 {
-	millis++;
+	micros++;														// Incrementa a variável micros
 }
 
-uint32_t port_millis( void )
+uint32_t port_micros( void )										// Função port_micros
 {
-	return millis;
+	return micros;													// Retorna micros
 }
 
-void port_sleep_ms( uint32_t delay )
+void port_sleep_us( uint32_t delay )								// Delay em microsegundos
 {
-	uint32_t start = millis;
-	while((millis - start) <= delay);
+	uint32_t start = micros;										// Temporizador
+	while((micros - start) <= delay);								// Espera o tempo da variável delay em microsegundos
 }
 
+void port_sleep_ms( uint32_t delay )								// Delay em milisegundos
+{
+	uint32_t start = micros;										// Temporizador
+	while((micros - start) <= delay*1000);							// Espera o tempo da variável delay em milisegundos
+}

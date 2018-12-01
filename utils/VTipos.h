@@ -25,6 +25,16 @@ typedef enum
 	TIMEOUT
 }return_codes_t;
 
+typedef struct
+{
+	char ID;
+	char Tamanho;
+	char ValorADC_1;
+	char ValorADC_2;
+	char ValorADC_3;
+	char ValorADC_4;
+}msg_protocol;
+
 /*************************************************************************************************/
 /*                                               DEFINI��ES                                      */
 /*************************************************************************************************/

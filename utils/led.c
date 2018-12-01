@@ -6,19 +6,21 @@
  */
 #include "led.h"
 
-void led_init ( void )
+																	//------------------COMENTÁRIOS-------------------//
+
+void led_init ( void )												// Inicialização
 {
-		GPIO_InitTypeDef gpio;
-		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-		gpio.GPIO_Pin = LED4_PIN | LED3_PIN | LED5_PIN | LED6_PIN;
-		gpio.GPIO_Mode = GPIO_Mode_OUT;
-		gpio.GPIO_Speed = GPIO_Speed_50MHz;
-		GPIO_Init(GPIOD, &gpio);
+		GPIO_InitTypeDef gpio;										// Struct da GPIO
+		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);		// Ativar clock da GPIO
+		gpio.GPIO_Pin = LED4_PIN | LED3_PIN | LED5_PIN | LED6_PIN;  // Pinos utilizados
+		gpio.GPIO_Mode = GPIO_Mode_OUT;								// Modo de saída
+		gpio.GPIO_Speed = GPIO_Speed_50MHz;							// Velocidade do GPIO
+		GPIO_Init(GPIOD, &gpio);									// Inicialização da GPIO
 
 }
 
-void led_write(uint16_t GPIO_Pin, BitAction BitVal)
+void led_write(uint16_t GPIO_Pin, BitAction BitVal)					// Escrita no led
 {
-	GPIO_WriteBit(GPIOD, GPIO_Pin, BitVal);
+	GPIO_WriteBit(GPIOD, GPIO_Pin, BitVal);							// Escreve no Pino GPIO_Pin o valor BitVal
 }
 
