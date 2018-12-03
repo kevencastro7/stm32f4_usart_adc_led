@@ -22,15 +22,12 @@ int main ( void )													//------------------COMENTÁRIOS------------------
 
 		port_init();												// Temporizador
 		debug_init();												// Comunicação Serial
-		led_init();													// LEDs
 		adc_init();													// Conversor analógico-digital
-        uint16_t adc ;												// Variável a receber o valor do adc
         uint32_t count = 0;											// Contador
-    	int fs = 1000;												// Frequência de amostragem
+    	int fs = 100;												// Frequência de amostragem
     	int adc_burst[4];											// Valores guardados em 1 segundo
-    	uint32_t start,sample;										// Valores de tempo
+    	uint32_t sample;										// Valores de tempo
     	port_sleep_ms(100);											// Delay de inicialização
-    	led_write(LED4_PIN,1);
 
 //------------------------------------------------------------------//
 
@@ -43,7 +40,7 @@ int main ( void )													//------------------COMENTÁRIOS------------------
 			count++;												// Incremento do contador
 	    	if (count == 4)											// Quando salva 4 amostras
 	    	{
-				debug_write_msg_string("|",&adc_burst[0]);			// Enviar os valores via serial
+				debug_write_msg_string(254,&adc_burst[0]);			// Enviar os valores via serial
 				count = 0;											// Zerar o contador
 	    	}
 			while((port_micros() - sample) <= 1000000/fs-1);		// Tempo de uma amostra
