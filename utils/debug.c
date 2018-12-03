@@ -47,16 +47,16 @@ void debug_init ( void )											// Inicialização
 		USART_Cmd( USART1 , ENABLE );								// Ativação da USART
 }
 
-void debug_write_string ( volatile char *info )						// Enviar String
+void debug_write_msg_string(char *ID,uint16_t *info)				// Enviar mensagem
 {
-		while ( *info  != 0)										// Enquanto a string não acabar
-		{
-				// wait until data register is empty
-				while ( ! ( USART1->SR & 0x00000040 ) )				// Espera o registrador de dados esvaziar
-						;
-				USART_SendData( USART1 , *info );					// Enviar 1 byte
-				info++;												// Incrementa o ponteiro
-		}
+	msg_protocol msg;												// Cria struct msg_protocol
+	msg.ID = 254;													// Atribui o ID
+	msg.Tamanho = 4;												// Atribui Tamanho
+	msg.ValorADC_1 = info[0]/16;									// Atribui o valor
+	msg.ValorADC_2 = info[2]/16;									// Atribui o valor
+	msg.ValorADC_3 = info[4]/16;									// Atribui o valor
+	msg.ValorADC_4 = info[6]/16;									// Atribui o valor
+	debug_write_protocol_string(msg);								// Enviar protocolo
 }
 
 void debug_write_protocol_string ( msg_protocol info )				// Enviar protocolo
@@ -68,17 +68,18 @@ void debug_write_protocol_string ( msg_protocol info )				// Enviar protocolo
 	debug_write_string(&info.ValorADC_3);							// Enviar valor do ADC
 	debug_write_string(&info.ValorADC_4);							// Enviar valor do ADC
 }
-void debug_write_msg_string(char *ID,uint16_t *info)				// Enivar mensagem
+
+void debug_write_string ( volatile char *info )						// Enviar String
 {
-	msg_protocol msg;												// Cria struct msg_protocol
-	msg.ID = *ID;													// Atribui o ID
-	msg.Tamanho = 4;												// Atribui Tamanho
-	msg.ValorADC_1 = info[0]/45;									// Atribui o valor
-	msg.ValorADC_2 = info[2]/45;									// Atribui o valor
-	msg.ValorADC_3 = info[4]/45;									// Atribui o valor
-	msg.ValorADC_4 = info[6]/45;									// Atribui o valor
-	debug_write_protocol_string(msg);								// Enviar protocolo
+		while ( *info  != 0)										// Enquanto a string não acabar
+		{
+				while ( ! ( USART1->SR & 0x00000040 ) )				// Espera o registrador de dados esvaziar
+						;
+				USART_SendData( USART1 , *info );					// Enviar 1 byte
+				info++;												// Incrementa o ponteiro
+		}
 }
+
 
 uint16_t debug_read()												// Leitura de dados
 {
